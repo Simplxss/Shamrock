@@ -74,8 +74,8 @@ internal class InitRemoteService : IAction {
 
     private fun startWebSocketClient(url: String, wsHeaders: HashMap<String, String>) {
         GlobalScope.launch {
-            try {
-                if (url.startsWith("ws://") || url.startsWith("wss://")) {
+            if (url.startsWith("ws://") || url.startsWith("wss://")) {
+                try {
                     var wsClient = WebSocketClientService(url, wsHeaders)
                     wsClient.connect()
                     timer(initialDelay = 5000L, period = 5000L) {
@@ -85,11 +85,11 @@ internal class InitRemoteService : IAction {
                             wsClient.connect()
                         }
                     }
-                } else {
-                    LogCenter.log("被动WebSocket地址不合法: $url", Level.ERROR)
+                } catch (e: Throwable) {
+                    LogCenter.log(e.stackTraceToString(), Level.ERROR)
                 }
-            } catch (e: Throwable) {
-                LogCenter.log(e.stackTraceToString(), Level.ERROR)
+            } else {
+                LogCenter.log("被动WebSocket地址不合法: $url", Level.ERROR)
             }
         }
     }
